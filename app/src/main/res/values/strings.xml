@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">e-legitymacja</string>
+    <string name="e_mail">e-mail</string>
+    <string name="e_mail_error">podany adres e-mail jest nie poprawny</string>
+    <string name="index_number">nr indeksu</string>
+    <string name="index_number_error">podaj 6 cyfr indeksu(albumu)</string>
+    <string name="password">hasło</string>
+    <string name="password_error">nie poprawne hasło</string>
+    <string name="password_re_enter">powtórz hasło</string>
+    <string name="password_re_enter_error">hasła są różne</string>
+    <string name="create_account">stwórz konto</string>
+    <string name="creating_account">Tworzenie konta...</string>
+    <string name="back">Powrót</string>
+    <string name="sign_out">Wyloguj</string>
+    <string name="sign_in">Zaloguj</string>
+    <string name="sign_up">Stwórz konto</string>
+    <string name="sign_up_message">Na Twój e-mail został wysłany kod aktywacyjny</string>
+    <string name="login">Logowanie...</string>
+    <string name="login_failed">Nie udało się zalogować</string>
+    <string name="new_account_link">Nie masz konta? Zarejestruj się!</string>
+    <string name="name_first">imię</string>
+    <string name="name_first_error">podaj imię minmum 3 litery</string>
+    <string name="name_middle">drugie imię</string>
+    <string name="name_last">nazwisko</string>
+    <string name="name_last_error">podaj nazwisko minmum 3 litery</string>
+    <string name="logo_description">Logo Politechniki Wrocławskiej z roku 2017</string>
+    <string name="address">adres</string>
+    <string name="address_error">podaj adres</string>
+    <string name="activation_code">kod aktywacyjny</string>
+    <string name="activation_code_error">podany kod jest nie poprawny</string>
+    <string name="processing">Przetwarzanie...</string>
+    <string name="tag_message">Zbliż telofon do tagu nfc aby odnotować obecność</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello World</string>
+</resources>

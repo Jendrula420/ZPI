@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1070746899068",
+    "firebase_url": "https://zpi-projekt.firebaseio.com",
+    "project_id": "zpi-projekt",
+    "storage_bucket": "zpi-projekt.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1070746899068:android:a4b0a6895ea3d369",
+        "android_client_info": {
+          "package_name": "com.sourcey.materialloginexample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1070746899068-u459hjgckvg3v0tgb555jkcp8rngb0tm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sourcey.materialloginexample",
+            "certificate_hash": "2ee273e4f27fa8e44e7133f0d56b375a64fa810b"
+          }
+        },
+        {
+          "client_id": "1070746899068-hmike29c2u498kkdndkjt4df5loijfce.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBffeUndJNtYeTxGyOc8enELob8D_5suqo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1070746899068-hmike29c2u498kkdndkjt4df5loijfce.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
