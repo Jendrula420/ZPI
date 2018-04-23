@@ -5,7 +5,7 @@
     <string name="index_number">nr indeksu</string>
     <string name="index_number_error">podaj 6 cyfr indeksu(albumu)</string>
     <string name="password">hasło</string>
-    <string name="password_error">nie poprawne hasło</string>
+    <string name="password_error">niepoprawne hasło</string>
     <string name="password_re_enter">powtórz hasło</string>
     <string name="password_re_enter_error">hasła są różne</string>
     <string name="create_account">stwórz konto</string>
@@ -31,7 +31,7 @@
     <string name="pesel">pesel</string>
     <string name="pesel_error">podaj 11-cyfrowy numer</string>
     <string name="activation_code">kod aktywacyjny</string>
-    <string name="activation_code_error">podany kod jest nie poprawny</string>
+    <string name="activation_code_error">podany kod jest niepoprawny</string>
     <string name="processing">Przetwarzanie...</string>
     <string name="tag_message">Zbliż telofon do tagu nfc aby odnotować obecność</string>
 
