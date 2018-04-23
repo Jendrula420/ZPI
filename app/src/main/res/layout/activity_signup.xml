@@ -96,21 +96,37 @@
                 android:hint="@string/address" />
         </android.support.design.widget.TextInputLayout>
 
-
-        <!--  Email Label -->
+        <!-- Pesel Label -->
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp">
             <EditText
-                android:maxLength="25"
-                android:id="@+id/input_email"
+                android:maxLength="128"
+                android:id="@+id/input_pesel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:hint="@string/e_mail" />
+                android:inputType="number"
+                android:hint="@string/pesel" />
         </android.support.design.widget.TextInputLayout>
+
+        <!-- NrLegitymacji Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+            <EditText
+                android:maxLength="128"
+                android:id="@+id/input_nrLegitymacji"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:hint="@string/nrLegitymacji" />
+        </android.support.design.widget.TextInputLayout>
+
+
 
         <!-- Password Label -->
         <android.support.design.widget.TextInputLayout

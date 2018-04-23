@@ -7,7 +7,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,17 +19,23 @@ import butterknife.ButterKnife;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
+    boolean student;
 
     @BindView(R.id.input_email) EditText _emailText;
     @BindView(R.id.input_password) EditText _passwordText;
     @BindView(R.id.btn_login) Button _loginButton;
     @BindView(R.id.link_signup) TextView _signupLink;
+    @BindView(R.id.switch_czyStudent) Switch _studentSwitch;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+        student = true;
+
+        _studentSwitch.setText("Logujesz się jako: Student");
+        _studentSwitch.setChecked(true);
         
         _loginButton.setOnClickListener(new View.OnClickListener() {
 
@@ -49,6 +57,22 @@ public class LoginActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
+
+        _studentSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b){
+                    compoundButton.setText("Logujesz się jako: Student");
+                    student = true;
+                }
+                else{
+                    compoundButton.setText("Logujesz się jako: Prowadzący");
+                    student = false;
+                }
+            }
+        });
+
+
     }
 
     public void login() {
@@ -135,7 +159,10 @@ public class LoginActivity extends AppCompatActivity {
             if(email.length() == 6)
             {
                 //if(emial.isNumeric())
-                email+="@student.pwr.edu.pl";
+                if(student)
+                    email+="@student.pwr.edu.pl";
+                else
+                    email+="@pwr.edu.pl";
                 _emailText.setText(email);
             }
             else if(!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches())

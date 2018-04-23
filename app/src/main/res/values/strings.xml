@@ -26,6 +26,10 @@
     <string name="logo_description">Logo Politechniki Wrocławskiej z roku 2017</string>
     <string name="address">adres</string>
     <string name="address_error">podaj adres</string>
+    <string name="nrLegitymacji">numer legitymacji</string>
+    <string name="nrLegitymacji_error">podaj 10-cyforwy numer</string>
+    <string name="pesel">pesel</string>
+    <string name="pesel_error">podaj 11-cyfrowy numer</string>
     <string name="activation_code">kod aktywacyjny</string>
     <string name="activation_code_error">podany kod jest nie poprawny</string>
     <string name="processing">Przetwarzanie...</string>

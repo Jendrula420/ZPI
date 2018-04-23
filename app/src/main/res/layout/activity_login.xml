@@ -21,6 +21,12 @@
             android:layout_gravity="center_horizontal" />
 
         <!--  Email Label --><!-- index android:maxLength="6"-->
+        <Switch
+            android:id="@+id/switch_czyStudent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Switch" />
+
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
