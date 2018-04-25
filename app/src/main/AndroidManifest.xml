@@ -29,7 +29,8 @@
             android:name=".SignupFinalizeActivity"
             android:theme="@style/AppTheme.Dark" />
         <activity android:name="com.sourcey.materialloginexample.NFC" />
-        <activity android:name=".NFC"></activity>
+        <activity android:name=".NFC" />
+        <activity android:name=".GenerateKeyActivity"></activity>
     </application>
 
 </manifest>

@@ -112,7 +112,12 @@ public class LoginActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 progressDialog.dismiss();
                 if(task.isSuccessful()){
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    Intent intent;
+                    if(student)
+                        intent = new Intent(getApplicationContext(), MainActivity.class);
+                    else
+                        //change
+                        intent = new Intent(getApplicationContext(), GenerateKeyActivity.class);
                     startActivityForResult(intent, REQUEST_SIGNUP);
                     finish();
                     overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
