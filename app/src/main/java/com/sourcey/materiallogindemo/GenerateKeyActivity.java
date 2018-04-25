@@ -3,6 +3,8 @@ package com.sourcey.materiallogindemo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -28,10 +30,14 @@ public class GenerateKeyActivity extends AppCompatActivity {
     Button butWyloguj;
     Button butGenerujKod;
     Button butZapisz;
+    Button butOdswiez;
     Spinner spinnerKursy;
+    ArrayAdapter<String> spinnerAdapter;
     ArrayList<String[]> daneKursow; //[0]nazwKursu, [1]idGrupy, [2]kodKursu, [3]dzienTyg, [4]godzRozp
 
     String idProwadzacy;
+    String idGrupa;
+    String[] elementySpinner;
 
     FirebaseAuth firebaseAuth;
     DatabaseReference database;
@@ -44,25 +50,22 @@ public class GenerateKeyActivity extends AppCompatActivity {
         textKod = findViewById(R.id.text_kod);
         textProwadzacy = findViewById(R.id.text_prowadzacy);
         textWybor = findViewById(R.id.text_wybor);
+        spinnerKursy = findViewById(R.id.spinner_kursy);
         butGenerujKod = findViewById(R.id.but_generuj);
+        butOdswiez = findViewById(R.id.but_odswiez);
 
         firebaseAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance().getReference();
         daneKursow = new ArrayList<>();
 
+
         ustalIdProwadzacy();
 
-        butGenerujKod.setOnClickListener(new View.OnClickListener() {
+
+        butOdswiez.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                wypelnijDane();
-                System.out.println("huh");
-                for(String[] arr : daneKursow){
-                    for(int i=0; i<arr.length; i++){
-                        System.out.print(arr[i]+", ");
-                    }
-                    System.out.println();
-                }
+                odswiezSpinner();
             }
         });
 
@@ -116,6 +119,30 @@ public class GenerateKeyActivity extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Toast.makeText(GenerateKeyActivity.this, "Error", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void odswiezSpinner(){
+        wypelnijDane();
+        elementySpinner = new String[daneKursow.size()];
+        for(int i=0; i<daneKursow.size(); i++){
+            String[] arr = daneKursow.get(i);
+            elementySpinner[i] = arr[0] + ", " + arr[3] + " " + arr[4];
+        }
+        spinnerAdapter = new ArrayAdapter<String>(GenerateKeyActivity.this, android.R.layout.simple_spinner_item, elementySpinner);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerKursy.setAdapter(spinnerAdapter);
+
+        spinnerKursy.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                idGrupa = daneKursow.get(i)[1];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
             }
         });
     }
