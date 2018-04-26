@@ -103,7 +103,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp">
             <EditText
-                android:maxLength="128"
+                android:maxLength="11"
                 android:id="@+id/input_pesel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -118,15 +118,13 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp">
             <EditText
-                android:maxLength="128"
+                android:maxLength="10"
                 android:id="@+id/input_nrLegitymacji"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:hint="@string/nrLegitymacji" />
         </android.support.design.widget.TextInputLayout>
-
-
 
         <!-- Password Label -->
         <android.support.design.widget.TextInputLayout
@@ -135,7 +133,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp">
             <EditText
-                android:maxLength="24"
+                android:maxLength="32"
                 android:id="@+id/input_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -150,7 +148,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp">
             <EditText
-                android:maxLength="24"
+                android:maxLength="32"
                 android:id="@+id/input_reEnterPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

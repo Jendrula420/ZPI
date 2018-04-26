@@ -21,12 +21,6 @@
             android:layout_gravity="center_horizontal" />
 
         <!--  Email Label --><!-- index android:maxLength="6"-->
-        <Switch
-            android:id="@+id/switch_czyStudent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Switch" />
-
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -34,7 +28,7 @@
             android:layout_marginBottom="8dp">
             <EditText
                 android:id="@+id/input_email"
-                android:maxLength="25"
+                android:maxLength="64"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
@@ -48,7 +42,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp">
             <EditText
-                android:maxLength="24"
+                android:maxLength="32"
                 android:id="@+id/input_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
