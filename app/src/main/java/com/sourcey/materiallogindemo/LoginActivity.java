@@ -114,7 +114,7 @@ public class LoginActivity extends AppCompatActivity {
                 if(task.isSuccessful()){
                     Intent intent;
                     if(student)
-                        intent = new Intent(getApplicationContext(), MainActivity.class);
+                        intent = new Intent(getApplicationContext(), PresenceActivity.class);
                     else
                         //change
                         intent = new Intent(getApplicationContext(), GenerateKeyActivity.class);

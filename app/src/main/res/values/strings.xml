@@ -34,7 +34,11 @@
     <string name="activation_code_error">podany kod jest niepoprawny</string>
     <string name="processing">Przetwarzanie...</string>
     <string name="tag_message">Zbliż telofon do tagu nfc aby odnotować obecność</string>
-
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello World</string>
+    <string name="nfc_detect_error">Nie wykryto taga NFC!</string>
+    <string name="nfc_write_error">Zbliż tag jeszcze raz</string>
+    <string name="nfc_write_success">Pomyślnie zapisano na tagu!</string>
+    <string name="nfc_null">Twój telefon nie obsługuje NFC</string>
+
 </resources>

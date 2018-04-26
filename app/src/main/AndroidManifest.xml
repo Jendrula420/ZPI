@@ -30,7 +30,8 @@
             android:theme="@style/AppTheme.Dark" />
         <activity android:name="com.sourcey.materialloginexample.NFC" />
         <activity android:name=".NFC" />
-        <activity android:name=".GenerateKeyActivity"></activity>
+        <activity android:name=".GenerateKeyActivity" />
+        <activity android:name=".PresenceActivity"></activity>
     </application>
 
 </manifest>

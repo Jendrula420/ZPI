@@ -81,7 +81,7 @@
         android:text="Zapisz"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_kod" />
+        app:layout_constraintTop_toBottomOf="@+id/text_nfcread" />
 
     <Button
         android:id="@+id/but_odswiez"
@@ -92,5 +92,17 @@
         android:text="odśwież"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spinner_kursy" />
+
+    <TextView
+        android:id="@+id/text_nfcread"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="6dp"
+        android:text=" "
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_kod" />
 
 </android.support.constraint.ConstraintLayout>
