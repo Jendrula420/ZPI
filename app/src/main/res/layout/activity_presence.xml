@@ -48,7 +48,7 @@
 
     <Spinner
         android:id="@+id/spinner_prowadzacy"
-        android:layout_width="368dp"
+        android:layout_width="0dp"
         android:layout_height="22dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="20dp"
@@ -70,10 +70,10 @@
 
     <TextView
         android:id="@+id/text_kurs"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="20dp"
         android:text=" "
         android:textSize="24sp"
