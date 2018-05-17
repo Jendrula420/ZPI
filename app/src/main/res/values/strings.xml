@@ -42,6 +42,8 @@
     <string name="sign_up_message">Na Twój e-mail został wysłany kod aktywacyjny</string>
     <string name="sign_up">Stwórz konto</string>
     <string name="tag_message">Zbliż telofon do tagu nfc aby odnotować obecność</string>
+    <string name="loadingData">Pobieranie danych</string>
+    <string name="checkCourse">Ustalanie kursu</string>
 
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello World</string>

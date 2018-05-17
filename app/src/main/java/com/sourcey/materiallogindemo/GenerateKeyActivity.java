@@ -60,7 +60,7 @@ public class GenerateKeyActivity extends AppCompatActivity {
     DatabaseReference database;
 
     //NFC
-    public final String ERROR_DETECTED = "Nie wykryto taga NFC"; //zamienic na R.strings
+    public final String ERROR_DETECTED = "Nie wykryto taga NFC"; //TODO zamienic na R.strings (również w innych miejscach)
     public final String WRITE_SUCCESS = "Pomyślnie zapisano na tagu";
     public final String WRITE_ERROR = "Zbliż tag jeszcze raz";
     NfcAdapter nfcAdapter;

@@ -1,6 +1,7 @@
 package com.sourcey.materiallogindemo;
 
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.FormatException;
@@ -9,6 +10,7 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -49,7 +51,6 @@ public class PresenceActivity extends AppCompatActivity {
     TextView textStudent;
     TextView textWybor;
     TextView textKurs;
-    Button butOdswiez;
     Button butWyloguj;
     Button butUstal;
     Button butObecnosc;
@@ -89,7 +90,6 @@ public class PresenceActivity extends AppCompatActivity {
         textStudent = findViewById(R.id.text_student);
         textWybor = findViewById(R.id.text_wybor2);
         textKurs = findViewById(R.id.text_kurs);
-        butOdswiez = findViewById(R.id.but_odswiez2);
         butWyloguj = findViewById(R.id.but_wyloguj2);
         butUstal = findViewById(R.id.but_ustal);
         butObecnosc = findViewById(R.id.but_obecnosc);
@@ -119,15 +119,6 @@ public class PresenceActivity extends AppCompatActivity {
         writeTagFilters = new IntentFilter[] { tagDetected };
 
 
-        butOdswiez.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                textStudent.setText(daneStudent);
-                odswiezSpinner();
-                wybranyKurs = null;
-            }
-        });
-
         butWyloguj.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -141,13 +132,28 @@ public class PresenceActivity extends AppCompatActivity {
         butUstal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                wybranyKurs = null;
+
+                final ProgressDialog checkCourseProgress = new ProgressDialog(PresenceActivity.this, R.style.AppTheme_Dark_Dialog);
+                checkCourseProgress.setIndeterminate(true);
+                checkCourseProgress.setMessage(getString(R.string.checkCourse));
+                checkCourseProgress.show();
+
                 ustalKurs();
-                if(wybranyKurs == null)
-                    textKurs.setText("Nie ustalono kursu");
-                else {
-                    textKurs.setText(wybranyKurs);
-                    butObecnosc.setEnabled(true);
-                }
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        checkCourseProgress.dismiss();
+
+                        if(wybranyKurs == null)
+                            textKurs.setText("Nie ustalono kursu");
+                        else {
+                            textKurs.setText(wybranyKurs);
+                            butObecnosc.setEnabled(true);
+                        }
+                    }
+                }, 2000);
 
             }
         });
@@ -162,6 +168,30 @@ public class PresenceActivity extends AppCompatActivity {
 
             }
         });
+
+        final ProgressDialog loadingDataProgress = new ProgressDialog(PresenceActivity.this, R.style.AppTheme_Dark_Dialog);
+        loadingDataProgress.setIndeterminate(true);
+        loadingDataProgress.setMessage(getString(R.string.loadingData));
+        loadingDataProgress.show();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                textStudent.setText(daneStudent);
+                odswiezSpinner();
+                wybranyKurs = null;
+            }
+        }, 3000);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                textStudent.setText(daneStudent);
+                odswiezSpinner();
+                wybranyKurs = null;
+                loadingDataProgress.dismiss();
+            }
+        }, 4000);
 
     }
 

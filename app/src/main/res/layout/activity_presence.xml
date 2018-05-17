@@ -30,29 +30,23 @@
         android:id="@+id/text_wybor2"
         android:layout_width="wrap_content"
         android:layout_height="15dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="Wybierz prowadzącego"
+        app:layout_constraintBottom_toTopOf="@+id/spinner_prowadzacy"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/but_wyloguj2" />
-
-    <Button
-        android:id="@+id/but_odswiez2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        android:text="Odśwież"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner_prowadzacy" />
 
     <Spinner
         android:id="@+id/spinner_prowadzacy"
         android:layout_width="0dp"
         android:layout_height="22dp"
+        android:layout_marginBottom="12dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/but_ustal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,9 +56,11 @@
         android:id="@+id/but_ustal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="12dp"
         android:text="Ustal kurs"
+        app:layout_constraintBottom_toTopOf="@+id/text_kurs"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spinner_prowadzacy" />
 
@@ -72,14 +68,16 @@
         android:id="@+id/text_kurs"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="80dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="8dp"
         android:text=" "
         android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/but_obecnosc"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/but_odswiez2" />
+        app:layout_constraintTop_toBottomOf="@+id/but_ustal" />
 
     <Button
         android:id="@+id/but_obecnosc"
@@ -87,11 +85,12 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="44dp"
         android:background="?attr/colorError"
         android:text="ODNOTUJ OBECNOŚĆ"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_kurs" />
 
