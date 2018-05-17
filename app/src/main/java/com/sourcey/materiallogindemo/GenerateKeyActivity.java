@@ -189,7 +189,7 @@ public class GenerateKeyActivity extends AppCompatActivity {
                 Iterator<DataSnapshot> iterator = dataSnapshot.child("Grupy").getChildren().iterator();
                 while(iterator.hasNext()){
                     DataSnapshot grupa = iterator.next();
-                    if(grupa.child("idProw").getValue().equals(idProwadzacy)){
+                    if(grupa.child("idProw").getValue().toString().equals(idProwadzacy)){
                         String nazwaKursu = dataSnapshot.child("Kursy").child(grupa.child("kodKursu").getValue().toString()).child("nazwa").getValue().toString().trim();
                         String[] kurs = new String[5];
                         kurs[0] = nazwaKursu;
