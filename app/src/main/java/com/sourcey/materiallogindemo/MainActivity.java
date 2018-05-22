@@ -47,6 +47,5 @@ public class MainActivity extends AppCompatActivity
                 overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
             }
         });
-
     }
 }

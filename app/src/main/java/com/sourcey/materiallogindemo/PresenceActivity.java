@@ -1,27 +1,21 @@
 package com.sourcey.materiallogindemo;
 
+import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.nfc.FormatException;
 import android.nfc.NdefMessage;
-import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.nfc.tech.Ndef;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,56 +24,41 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import org.w3c.dom.Text;
-
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.Hashtable;
 import java.util.Iterator;
 
+@SuppressWarnings("ConstantConditions")
 public class PresenceActivity extends AppCompatActivity {
 
     TextView textStudent;
-    TextView textWybor;
-    TextView textKurs;
-    Button butOdswiez;
     Button butWyloguj;
-    Button butUstal;
     Button butObecnosc;
-    Spinner spinnerProwadzacy;
-    ArrayAdapter<String> spinnerAdapter;
 
-
-    ArrayList<String> elementySpinner;
-    ArrayList<String> prowadzacyList;
-    String nrAlbumu;
-    String daneStudent;
-    String wybranyProw;
-    String wybranyKurs;
-    String idGrupy;
-    String kod;
+    Button butStolowka;
+    AlertDialog dialog;
+    Hashtable<String, String> values = new Hashtable<>();
 
     FirebaseAuth firebaseAuth;
     DatabaseReference database;
 
     //NFC
-    public final String ERROR_DETECTED = "Nie wykryto taga NFC"; //zamienic na R.strings
-    public final String WRITE_SUCCESS = "Pomyślnie zapisano na tagu";
-    public final String WRITE_ERROR = "Zbliż tag jeszcze raz";
     NfcAdapter nfcAdapter;
     PendingIntent pendingIntent;
     IntentFilter writeTagFilters[];
     boolean writeMode;
+    boolean noNFCMode;
     Tag myTag;
-
-
+    String mode = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,28 +66,17 @@ public class PresenceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_presence);
 
         textStudent = findViewById(R.id.text_student);
-        textWybor = findViewById(R.id.text_wybor2);
-        textKurs = findViewById(R.id.text_kurs);
-        butOdswiez = findViewById(R.id.but_odswiez2);
         butWyloguj = findViewById(R.id.but_wyloguj2);
-        butUstal = findViewById(R.id.but_ustal);
         butObecnosc = findViewById(R.id.but_obecnosc);
-        spinnerProwadzacy = findViewById(R.id.spinner_prowadzacy);
-
-        elementySpinner = new ArrayList<>();
-        prowadzacyList = new ArrayList<>();
+        butStolowka = findViewById(R.id.but_stolowka);
         firebaseAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance().getReference();
-
-        ustalIdStudent();
-
-        butObecnosc.setEnabled(false);
-
-
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        if (nfcAdapter == null) {
-            Toast.makeText(this, "Twój telefon nie obsługuje NFC", Toast.LENGTH_LONG).show();
-            finish();
+        if (nfcAdapter == null)
+        {
+            infoDialog("Twój telefon nie obsługuje NFC. Niestety będziesz musiał wprowadzać specjalne kody.", true);
+            //TODO new activity manual input or inputMode
+            noNFCMode = true;
         }
 
         readFromIntent(getIntent());
@@ -117,16 +85,6 @@ public class PresenceActivity extends AppCompatActivity {
         IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
         tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
         writeTagFilters = new IntentFilter[] { tagDetected };
-
-
-        butOdswiez.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                textStudent.setText(daneStudent);
-                odswiezSpinner();
-                wybranyKurs = null;
-            }
-        });
 
         butWyloguj.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,159 +96,76 @@ public class PresenceActivity extends AppCompatActivity {
             }
         });
 
-        butUstal.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ustalKurs();
-                if(wybranyKurs == null)
-                    textKurs.setText("Nie ustalono kursu");
-                else {
-                    textKurs.setText(wybranyKurs);
-                    butObecnosc.setEnabled(true);
-                }
-
-            }
-        });
-
         butObecnosc.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-
-                Toast.makeText(PresenceActivity.this, "Zbliż tag", Toast.LENGTH_LONG).show();
-
-
-
+            public void onClick(View view)
+            {
+                mode = "presence";
+                infoDialog("Proszę zbliżyć tag NFC w celu odnotowania obecności na zajęciach.", false);
             }
         });
 
+        butStolowka.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                mode = "cafeteria";
+                infoDialog("Proszę zbliżyć tag NFC na stołówce studenckiej w celu wygenerowania kuponu.", false);
+            }
+        });
     }
 
-    private void ustalIdStudent(){
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        loadStudentData();
+        if(!nfcAdapter.isEnabled())
+        {
+            //Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+            //startActivity(intent);
+            //infoDialog("Twój telefon nie obsługuje NFC. Aby skorzystać z serwisu będziesz musiał wprowadzać ręcznie specjalne kody.", true);
+            noNFCMode = true;
+        }
+    }
+
+    private void getStudent()
+    {
         final String emailStudent = firebaseAuth.getCurrentUser().getEmail();
-        database.child("Studenci")
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
-                        while (iterator.hasNext()){
-                            DataSnapshot item = iterator.next();
-                            String emailCurrent = item.child("email").getValue().toString();
-                            if(emailCurrent.equals(emailStudent)){
-                                nrAlbumu = item.getKey().toString();
-                                daneStudent = item.child("imie").getValue().toString()
-                                        +" "+item.child("nazwisko").getValue().toString();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Toast.makeText(PresenceActivity.this, "Error", Toast.LENGTH_LONG).show();
-                    }
-                });
-
-    }
-
-    private void odswiezSpinner(){
-        database.child("Prowadzacy").addValueEventListener(new ValueEventListener() {
+        textStudent.setText(R.string.loading_data);
+        database.child("Studenci").addListenerForSingleValueEvent(new ValueEventListener()
+        {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
                 Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
-                while (iterator.hasNext()){
-                    DataSnapshot prow = iterator.next();
-                    String prowadzacy = prow.child("tytul").getValue().toString()
-                            +" "+prow.child("imie").getValue().toString()
-                            +" "+prow.child("nazwisko").getValue().toString();
-                    elementySpinner.add(prowadzacy);
-                    prowadzacyList.add(prow.getKey());
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(PresenceActivity.this, "Error", Toast.LENGTH_LONG).show();
-            }
-        });
-
-        spinnerAdapter = new ArrayAdapter<String>(PresenceActivity.this, android.R.layout.simple_spinner_item, elementySpinner);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerProwadzacy.setAdapter(spinnerAdapter);
-
-        spinnerProwadzacy.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                wybranyProw = prowadzacyList.get(i);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-    }
-
-    private void ustalKurs(){
-        database.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterator<DataSnapshot> iterator = dataSnapshot.child("Grupy").getChildren().iterator();
-                while(iterator.hasNext()){
-                    DataSnapshot grupa = iterator.next();
-                    if(grupa.child("idProw").getValue().toString().equals(wybranyProw)){
-                        Calendar calendar = Calendar.getInstance();
-                        int dayAkt = calendar.get(Calendar.DAY_OF_WEEK);
-                        int dayRozp = Calendar.SATURDAY;
-
-                        if(grupa.child("dzienTyg").getValue().toString().equals("Poniedziałek"))
-                            dayRozp = Calendar.MONDAY;
-                        else if(grupa.child("dzienTyg").getValue().toString().equals("Wtorek"))
-                            dayRozp = Calendar.TUESDAY;
-                        else if(grupa.child("dzienTyg").getValue().toString().equals("Środa"))
-                            dayRozp = Calendar.WEDNESDAY;
-                        else if(grupa.child("dzienTyg").getValue().toString().equals("Czwartek"))
-                            dayRozp = Calendar.THURSDAY;
-                        else if(grupa.child("dzienTyg").getValue().toString().equals("Piątek"))
-                            dayRozp = Calendar.FRIDAY;
-
-
-                        String godzRozp = grupa.child("godzRoz").getValue().toString().trim();
-                        String godzZak = grupa.child("godzZak").getValue().toString().trim();
-                        Calendar cal = Calendar.getInstance();
-                        DateFormat formatter = new SimpleDateFormat("HH:mm");
-                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-                        Date gRoz = new Date();
-                        Date gZak = new Date();
-                        Date gAkt = new Date();
-                        try {
-                            gRoz = (Date)formatter.parse(godzRozp);
-                            gZak = (Date)formatter.parse(godzZak);
-                            gAkt = (Date)formatter.parse(sdf.format(cal.getTime()));
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-                        if(gAkt.after(gRoz) && gAkt.before(gZak) && dayAkt == dayRozp){
-                            idGrupy = grupa.getKey();
-                            wybranyKurs = dataSnapshot.child("Kursy").child(grupa.child("kodKursu").getValue().toString()).child("nazwa").getValue().toString().trim()
-                                    + ", " + grupa.child("dzienTyg").getValue().toString().trim()
-                                    + " " + grupa.child("godzRoz").getValue().toString().trim();
-                            break;
-                        }
+                boolean nFound = true;
+                while (iterator.hasNext() && nFound)
+                {
+                    DataSnapshot item = iterator.next();
+                    if(emailStudent.equals(item.child("email").getValue().toString()))
+                    {
+                        values.put("studentName", item.child("imie").getValue().toString() +" "+
+                                item.child("nazwisko").getValue().toString());
+                        values.put("indexNumber", item.getKey());
+                        String s = "Witaj "+values.get("studentName")
+                                +"!\nNr albumu: "+values.get("indexNumber")+".";
+                        saveStudentData();
+                        textStudent.setText(s);
+                        nFound = false;
                     }
                 }
-
             }
-
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
+            public void onCancelled(DatabaseError databaseError) {}
         });
     }
 
-    //Zapisywanie na NFC
-
-
-    private void readFromIntent(Intent intent) {
+    //odczyt NFC
+    private void readFromIntent(Intent intent)
+    {
+        String m = mode;
+        mode = "";
         String action = intent.getAction();
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
                 || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
@@ -303,11 +178,12 @@ public class PresenceActivity extends AppCompatActivity {
                     msgs[i] = (NdefMessage) rawMsgs[i];
                 }
             }
-            buildTagViews(msgs);
+            buildTagViews(msgs, m);
         }
     }
 
-    private void buildTagViews(NdefMessage[] msgs) {
+    private void buildTagViews(NdefMessage[] msgs, String mode)
+    {
         if (msgs == null || msgs.length == 0) return;
 
         String text = "";
@@ -320,49 +196,298 @@ public class PresenceActivity extends AppCompatActivity {
         } catch (UnsupportedEncodingException e) {
             Log.e("UnsupportedEncoding", e.toString());
         }
-
-        kod = text;
-        if(butObecnosc.isEnabled()){
-            zapiszObecnosc();
-
+        values.put("codeNFC", text);
+        if(mode.equals("presence"))
+            getGroupID();
+        else if(mode.equals("cafeteria"))
+        {
+            //TODO verification cafeterias coupons
+            getCoupon();
         }
     }
 
-
-
-    private void zapiszObecnosc(){
-        database.child("Kody").addValueEventListener(new ValueEventListener() {
+    private void getGroupID()
+    {
+        database.child("Kody").addListenerForSingleValueEvent(new ValueEventListener()
+        {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String kodObecnosci = dataSnapshot.child(idGrupy.toString()).child("kod").getValue().toString().trim();
-                if(kodObecnosci.equals(kod)){
-                    database.child("Obecnosci").child(idGrupy.toString()).child(nrAlbumu.toString()).setValue("Obecny")
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if(task.isSuccessful())
-                                        Toast.makeText(PresenceActivity.this, "Twoja obecność została odnotowana", Toast.LENGTH_LONG).show();
-                                    else
-                                        Toast.makeText(PresenceActivity.this, "Wystąpił błąd", Toast.LENGTH_LONG).show();
-                                }
-                            });
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
+                boolean nFound = true;
+                String code = values.get("codeNFC");
+                while (iterator.hasNext() && nFound)
+                {
+                    DataSnapshot item = iterator.next();
+                    if(code.equals(item.child("kod").getValue().toString()))
+                    {
+                        values.put("groupID", item.getKey());
+                        values.put("classesNumber", item.child("zajecia").getValue().toString());
+                        nFound = false;
+                        getGroup();
+                    }
                 }
-
             }
-
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
+            public void onCancelled(DatabaseError databaseError) {}
         });
     }
 
+    private void getGroup()
+    {
+        database.child("Grupy").addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
+                boolean nFound = true;
+                String group = values.get("groupID");
+                while (iterator.hasNext() && nFound)
+                {
+                    DataSnapshot item = iterator.next();
+                    if(group.equals( item.getKey() ))
+                    {
+                        nFound = false;
+                        values.put("lecturerID", item.child("idProw").getValue().toString());
+                        values.put("courseID", item.child("kodKursu").getValue().toString());
+                        String tp = item.child("tydzienParz").getValue().toString();
+                        values.put("classesDate",  item.child("dzienTyg").getValue().toString()
+                                +((tp.equals("true"))?"tydzień parzysty":(tp.equals("false"))?"tydzień nieparzysty":""));
+                        values.put("classesPlace",   item.child("budynek").getValue().toString()
+                                +" "+item.child("sala").getValue().toString());
+                        values.put("classesTime",    item.child("godzRoz").getValue().toString()
+                                +"-"+item.child("godzZak").getValue().toString());
+                        getLecturer();
+                        getCourse();
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+    }
+
+    private void getLecturer()
+    {
+        database.child("Prowadzacy").addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
+                boolean nFound = true;
+                String lecturer = values.get("lecturerID");
+                while (iterator.hasNext() && nFound)
+                {
+                    DataSnapshot item = iterator.next();
+                    if(lecturer.equals( item.getKey() ))
+                    {
+                        values.put("lecturer",   item.child("tytul").getValue().toString()
+                                +" "+item.child("imie").getValue().toString()
+                                +" "+item.child("nazwisko").getValue().toString());
+                        nFound = false;
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+    }
+
+    private void getCourse()
+    {
+        database.child("Kursy").addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
+                boolean nFound = true;
+                String course = values.get("courseID");
+                while (iterator.hasNext() && nFound)
+                {
+                    DataSnapshot item = iterator.next();
+                    if(course.equals( item.getKey() ))
+                    {
+                        values.put("courseName", item.child("nazwa").getValue().toString() );
+                        nFound = false;
+                        values.get("lecturer");
+                        presenceDialog();
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+    }
+
+    private void presenceDialog()
+    {
+        AlertDialog.Builder adb = new AlertDialog.Builder(this);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_note_presence, null);
+        Button presence = dialogView.findViewById(R.id.buttonNPPresence);
+        Button cancel   = dialogView.findViewById(R.id.buttonNPCancel);
+        String message ="Kurs: "+values.get("courseName")
+                +"\nProwadzący: "+values.get("lecturer")
+                +"\nCzas zajęć: "+values.get("classesDate")+": "+values.get("classesTime")
+                +"\nMiejsce zajęć: "+values.get("classesPlace")
+                +"\nZajęcia numer: "+values.get("classesNumber");
+        values.put("message", message);
+        TextView tv = dialogView.findViewById(R.id.textNP);
+        tv.setText(message);
+        adb.setView(dialogView);
+        final AlertDialog dialog = adb.create();
+
+        presence.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                dialog.cancel();
+                zapiszObecnosc();
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                dialog.cancel();
+            }
+        });
+        dialog.show();
+    }
+
+    //zapis obecności na podstawie NFC
+    private void zapiszObecnosc()
+    {
+        String p = values.get("classesNumber")+"."+
+                new SimpleDateFormat("yy-MM-dd.HH:mm").format(Calendar.getInstance().getTime());
+
+
+        //TODO add to p geolocalization and imei
+        database.child("Obecnosci").child(values.get("groupID")).child(values.get("indexNumber")).setValue(p)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful())
+                            infoDialog("Twoja obecność została odnotowana na zjęciach:\n"+values.get("message"), true);
+                        else
+                            infoDialog("Wystąpił błąd!", true);
+                    }
+                });
+    }
+
+    private void infoDialog(String message, boolean ok)
+    {
+        AlertDialog.Builder adb = new AlertDialog.Builder(this);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_info, null);
+        Button close = dialogView.findViewById(R.id.buttonInfoClose);
+        if(!ok)
+            close.setText(R.string.cancel);
+        TextView tv = dialogView.findViewById(R.id.textInfo);
+        tv.setText(message);
+        adb.setView(dialogView);
+        final AlertDialog dialog = adb.create();
+        this.dialog = dialog;
+
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                dialog.cancel();
+                mode = "";
+            }
+        });
+        dialog.show();
+    }
+
+    private void getCoupon()
+    {
+        values.put("date", new SimpleDateFormat("yy-MM-dd").format(Calendar.getInstance().getTime()));
+        database.child("Kupony").addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
+                boolean nFound = true;
+                String v = values.get("date");
+                while (iterator.hasNext() && nFound)
+                {
+                    DataSnapshot item = iterator.next();
+                    if(v.equals( item.getKey() ))
+                    {
+                        String id = values.get("indexNumber");
+                        v = item.getValue().toString();
+                        v = v.replaceAll("[{},]", "");
+                        v = v.replaceAll("=[0-2][0-9]:[0-5][0-9]", "");
+                        if(v.length()<7)
+                        {
+                            if (!v.equals(id))
+                                generateCoupon();
+                            else
+                                infoDialog("Dzisiejszy kupon został już wykorzystany o godzinie: "
+                                        +item.child(id).getValue().toString()+".", true);
+                        }
+                        else
+                        {
+                            if (!found(v.split(" "), id))
+                                generateCoupon();
+                            else
+                                infoDialog("Dzisiejszy kupon został już wykorzystany o godzinie: "
+                                        +item.child(id).getValue().toString()+".", true);
+                        }
+                        nFound = false;
+                    }
+                }
+                if(nFound)
+                    generateCoupon();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+    }
+
+    protected void generateCoupon()
+    {
+        values.put("time", new SimpleDateFormat("HH:mm").format(Calendar.getInstance().getTime()));
+        database.child("Kupony").child(values.get("date")).child(values.get("indexNumber")).setValue(values.get("time"))
+            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful())
+                        infoDialog("Kupon został przyznany.\nCzas przyznania: "
+                                +(values.get("time"))+".\nProszę pokazać komunikat ekspedjentce przed zamknięciem.", true);
+                    else
+                        infoDialog("Wystąpił błąd!", true);
+                }
+            });
+    }
+
+    protected boolean found(String[] IDs, String searchedID)
+    {
+        boolean result = true;
+        int i =0;
+        while(i<IDs.length && result)
+        {
+            if(IDs[i].equals(searchedID))
+                result = false;
+        }
+        return !result;
+    }
+
     @Override
-    protected void onNewIntent(Intent intent) {
-        setIntent(intent);
-        readFromIntent(intent);
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
-            myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+    protected void onNewIntent(Intent intent)
+    {
+        if(!mode.equals(""))
+        {
+            dialog.cancel();
+            setIntent(intent);
+            readFromIntent(intent);
+            if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction()))
+                myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         }
     }
 
@@ -378,7 +503,6 @@ public class PresenceActivity extends AppCompatActivity {
         WriteModeOn();
     }
 
-
     private void WriteModeOn(){
         writeMode = true;
         nfcAdapter.enableForegroundDispatch(this, pendingIntent, writeTagFilters, null);
@@ -389,5 +513,29 @@ public class PresenceActivity extends AppCompatActivity {
         nfcAdapter.disableForegroundDispatch(this);
     }
 
+    public void saveStudentData()
+    {
+        //TODO szyfrowanie danych
+        try {
+            FileOutputStream os = openFileOutput("studentData", Context.MODE_PRIVATE);
+            DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(os));
+            dos.writeUTF(values.get("indexNumber"));
+            dos.writeUTF(values.get("studentName"));
+            dos.close();
+        } catch (Exception e) { textStudent.setText(e.getMessage()); }
+    }
 
+    public void loadStudentData()
+    {
+        try {
+            FileInputStream fis = openFileInput("studentData");
+            DataInputStream dis = new DataInputStream(new BufferedInputStream(fis));
+            values.put("indexNumber", dis.readUTF());
+            values.put("studentName", dis.readUTF());
+            dis.close();
+            String s = "Witaj "+values.get("studentName")
+                    +"!\nNr albumu: "+values.get("indexNumber")+".";
+            textStudent.setText(s);
+        } catch (IOException e) { getStudent(); }
+    }
 }

@@ -32,7 +32,7 @@
             android:theme="@style/AppTheme.Dark" />
         <activity android:name=".NFC" />
         <activity android:name=".GenerateKeyActivity" />
-        <activity android:name=".PresenceActivity"></activity>
+        <activity android:name=".PresenceActivity"/>
     </application>
 
 </manifest>

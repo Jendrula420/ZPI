@@ -14,30 +14,27 @@
         android:paddingRight="24dp"
         android:padding="16dp">
 
-        <!-- Sign Up Message Label -->
-        <TextView android:id="@+id/login_offline_message"
+        <TextView android:id="@+id/textNP"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/login_offline_message"
-            android:gravity="center"
+            android:text=""
             android:textSize="16sp"/>
 
-        <!-- Signup Button -->
         <android.support.v7.widget.AppCompatButton
-            android:id="@+id/btn_login_offline"
+            android:id="@+id/buttonNPPresence"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="24dp"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="#005f25"
             android:padding="12dp"
-            android:text="@string/login_offline"/>
+            android:text="@string/note_presence"/>
 
-        <TextView android:id="@+id/link_back"
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/buttonNPCancel"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/back"
-            android:gravity="center"
-            android:textSize="16sp"/>
+            android:padding="12dp"
+            android:text="@string/mistake"/>
 
     </LinearLayout>
 </ScrollView>

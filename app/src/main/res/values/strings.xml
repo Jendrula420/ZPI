@@ -11,7 +11,7 @@
     <string name="back">Powrót</string>
     <string name="internet_connection_error">brak połączenia z internetem</string>
     <string name="create_account">stwórz konto</string>
-    <string name="creating_account">Tworzenie konta...</string>
+    <string name="creating_account">Tworzenie konta&#8230;</string>
     <string name="e_mail_error">podany adres e-mail jest nie poprawny</string>
     <string name="e_mail">e-mail</string>
     <string name="index_number_error">podaj 6 cyfr indeksu(albumu)</string>
@@ -20,7 +20,7 @@
     <string name="login_offline">Zaloguj offline</string>
     <string name="login_offline_message">Brak połączenie z internetem!\nCzy chcesz zalogować się offline?</string>
     <string name="offline_message">Twoje obecności zostaną zapisane i przesłane na serwer przy najbliższym logowaniu do serwisu.\nPozostałe aktywności są nie dostępne.</string>
-    <string name="login">Logowanie...</string>
+    <string name="login">Logowanie&#8230;</string>
     <string name="logo_description">Logo Politechniki Wrocławskiej z roku 2017</string>
     <string name="name_first_error">podaj imię minmum 3 litery</string>
     <string name="name_first">imię</string>
@@ -36,13 +36,21 @@
     <string name="password">hasło</string>
     <string name="pesel_error">podaj 11-cyfrowy numer</string>
     <string name="pesel">pesel</string>
-    <string name="processing">Przetwarzanie...</string>
+    <string name="processing">Przetwarzanie&#8230;</string>
     <string name="sign_in">Zaloguj</string>
     <string name="sign_out">Wyloguj</string>
+    <string name="note_presence">Odnotuj obecność</string>
     <string name="sign_up_message">Na Twój e-mail został wysłany kod aktywacyjny</string>
     <string name="sign_up">Stwórz konto</string>
     <string name="tag_message">Zbliż telofon do tagu nfc aby odnotować obecność</string>
+    <string name="cafeterias_coupons">Kupon na stołówkę</string>
+    <string name="resignation">Zrezygnyj</string>
+    <string name="ok">OK</string>
+    <string name="mistake">Pomyłka / Nieaktualny TAG NFC</string>
 
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello World</string>
+    <string name="cancel">Anuluj</string>
+    <string name="loading_data">Wczytuje dane...</string>
+    <string name="submit">Zatwierdź</string>
 </resources>

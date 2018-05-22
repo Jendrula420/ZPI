@@ -123,8 +123,6 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-
-
     public boolean validate()
     {
         boolean valid = true;
@@ -230,7 +228,6 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-
     public void saveUser()
     {
         //TODO zapis danych urzytkownika z bazy danych i kopatybilna metoda odczytu
@@ -289,7 +286,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v)
             {
                 Toast.makeText(getApplicationContext(), "Tutaj zostanie dodane aktywności offline", Toast.LENGTH_LONG).show();
-                //loginOffline();
+                loginOffline();
             }
         });
 
