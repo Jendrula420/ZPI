@@ -1,21 +1,32 @@
 package com.sourcey.materiallogindemo;
 
 import android.app.AlertDialog;
+import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.hardware.fingerprint.FingerprintManager;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.Build;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
+import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyPermanentlyInvalidatedException;
+import android.security.keystore.KeyProperties;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,10 +43,25 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Iterator;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 
 @SuppressWarnings("ConstantConditions")
 public class PresenceActivity extends AppCompatActivity {
@@ -51,6 +77,7 @@ public class PresenceActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     DatabaseReference database;
 
+
     //NFC
     NfcAdapter nfcAdapter;
     PendingIntent pendingIntent;
@@ -59,6 +86,19 @@ public class PresenceActivity extends AppCompatActivity {
     boolean noNFCMode;
     Tag myTag;
     String mode = "";
+
+    //FINGERPRINT
+    private KeyStore mKeyStore;
+    private KeyGenerator mKeyGenerator;
+    private SharedPreferences mSharedPreferences;
+    Cipher defaultCipher;
+    Cipher cipherNotInvalidated;
+
+    //TODO Zmienic
+    private static final String DIALOG_FRAGMENT_TAG = "myFragment";
+    private static final String SECRET_MESSAGE = "Very secret message";
+    private static final String KEY_NAME_NOT_INVALIDATED = "key_not_invalidated";
+    static final String DEFAULT_KEY_NAME = "default_key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +153,57 @@ public class PresenceActivity extends AppCompatActivity {
                 infoDialog("Proszę zbliżyć tag NFC na stołówce studenckiej w celu wygenerowania kuponu.", false);
             }
         });
+
+
+        //FINGERPRINT
+        try {
+            mKeyStore = KeyStore.getInstance("AndroidKeyStore");
+        } catch (KeyStoreException e) {
+            throw new RuntimeException("Failed to get an instance of KeyStore", e);
+        }
+        try {
+            mKeyGenerator = KeyGenerator
+                    .getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
+        } catch (NoSuchAlgorithmException | NoSuchProviderException e) {
+            throw new RuntimeException("Failed to get an instance of KeyGenerator", e);
+        }
+        try {
+            defaultCipher = Cipher.getInstance(KeyProperties.KEY_ALGORITHM_AES + "/"
+                    + KeyProperties.BLOCK_MODE_CBC + "/"
+                    + KeyProperties.ENCRYPTION_PADDING_PKCS7);
+            cipherNotInvalidated = Cipher.getInstance(KeyProperties.KEY_ALGORITHM_AES + "/"
+                    + KeyProperties.BLOCK_MODE_CBC + "/"
+                    + KeyProperties.ENCRYPTION_PADDING_PKCS7);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            throw new RuntimeException("Failed to get an instance of Cipher", e);
+        }
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        KeyguardManager keyguardManager = getSystemService(KeyguardManager.class);
+        FingerprintManager fingerprintManager = getSystemService(FingerprintManager.class);
+
+
+
+        if (!keyguardManager.isKeyguardSecure()) {
+            Toast.makeText(this,
+                    "Secure lock screen hasn't set up.\n"
+                            + "Go to 'Settings -> Security -> Fingerprint' to set up a fingerprint",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
+
+        if (!fingerprintManager.hasEnrolledFingerprints()) {
+            // This happens when no fingerprints are registered.
+            Toast.makeText(this,
+                    "Go to 'Settings -> Security -> Fingerprint' and register at least one" +
+                            " fingerprint",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+        createKey(DEFAULT_KEY_NAME, true);
+        createKey(KEY_NAME_NOT_INVALIDATED, false);
+
     }
 
     @Override
@@ -360,23 +451,31 @@ public class PresenceActivity extends AppCompatActivity {
     }
 
     //zapis obecności na podstawie NFC
+
+    public void potwierdzObecnosc(){
+            String p = values.get("classesNumber")+"."+
+                    new SimpleDateFormat("yy-MM-dd.HH:mm").format(Calendar.getInstance().getTime());
+
+
+            //TODO add to p geolocalization and imei
+            database.child("Obecnosci").child(values.get("groupID")).child(values.get("indexNumber")).setValue(p)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if(task.isSuccessful())
+                                infoDialog("Twoja obecność została odnotowana na zjęciach:\n"+values.get("message"), true);
+                            else
+                                infoDialog("Wystąpił błąd!", true);
+                        }
+                    });
+    }
+
+
     private void zapiszObecnosc()
     {
-        String p = values.get("classesNumber")+"."+
-                new SimpleDateFormat("yy-MM-dd.HH:mm").format(Calendar.getInstance().getTime());
+        PurchaseFingerPrint finger = new PurchaseFingerPrint(defaultCipher, DEFAULT_KEY_NAME);
+        finger.check();
 
-
-        //TODO add to p geolocalization and imei
-        database.child("Obecnosci").child(values.get("groupID")).child(values.get("indexNumber")).setValue(p)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful())
-                            infoDialog("Twoja obecność została odnotowana na zjęciach:\n"+values.get("message"), true);
-                        else
-                            infoDialog("Wystąpił błąd!", true);
-                    }
-                });
     }
 
     private void infoDialog(String message, boolean ok)
@@ -537,5 +636,119 @@ public class PresenceActivity extends AppCompatActivity {
                     +"!\nNr albumu: "+values.get("indexNumber")+".";
             textStudent.setText(s);
         } catch (IOException e) { getStudent(); }
+    }
+
+    //FINGERPRINT ZONE
+
+    public void createKey(String keyName, boolean invalidatedByBiometricEnrollment) {
+        try {
+            mKeyStore.load(null);
+
+
+            KeyGenParameterSpec.Builder builder = new KeyGenParameterSpec.Builder(keyName,
+                    KeyProperties.PURPOSE_ENCRYPT |
+                            KeyProperties.PURPOSE_DECRYPT)
+                    .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
+
+                    .setUserAuthenticationRequired(true)
+                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7);
+
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                builder.setInvalidatedByBiometricEnrollment(invalidatedByBiometricEnrollment);
+            }
+            mKeyGenerator.init(builder.build());
+            mKeyGenerator.generateKey();
+        } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException
+                | CertificateException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void onPurchased(boolean withFingerprint,
+                            @Nullable FingerprintManager.CryptoObject cryptoObject) {
+        if (withFingerprint) {
+            // If the user has authenticated with fingerprint, verify that using cryptography and
+            // then show the confirmation message.
+            assert cryptoObject != null;
+            tryEncrypt(cryptoObject.getCipher());
+        } else {
+            // Authentication happened with backup password. Just show the confirmation message.
+           // showConfirmation(null);
+        }
+        potwierdzObecnosc();
+    }
+
+    private boolean initCipher(Cipher cipher, String keyName) {
+        try {
+            mKeyStore.load(null);
+            SecretKey key = (SecretKey) mKeyStore.getKey(keyName, null);
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            return true;
+        } catch (KeyPermanentlyInvalidatedException e) {
+            return false;
+        } catch (KeyStoreException | CertificateException | UnrecoverableKeyException | IOException
+                | NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new RuntimeException("Failed to init Cipher", e);
+        }
+    }
+
+//    private void showConfirmation(byte[] encrypted) {
+//        findViewById(R.id.confirmation_message).setVisibility(View.VISIBLE);
+//        if (encrypted != null) {
+//            TextView v = findViewById(R.id.encrypted_message);
+//            v.setVisibility(View.VISIBLE);
+//            v.setText(Base64.encodeToString(encrypted, 0 /* flags */));
+//        }
+//    }
+
+    private void tryEncrypt(Cipher cipher) {
+        try {
+            byte[] encrypted = cipher.doFinal(SECRET_MESSAGE.getBytes());
+           // showConfirmation(encrypted);
+        } catch (BadPaddingException | IllegalBlockSizeException e) {
+            Toast.makeText(this, "Failed to encrypt the data with the generated key. "
+                    + "Retry the purchase", Toast.LENGTH_LONG).show();
+            //Log.e(TAG, "Failed to encrypt the data with the generated key." + e.getMessage());
+        }
+    }
+
+    private class PurchaseFingerPrint {
+
+        Cipher mCipher;
+        String mKeyName;
+
+        PurchaseFingerPrint(Cipher cipher, String keyName) {
+            mCipher = cipher;
+            mKeyName = keyName;
+        }
+
+        public void check() {
+
+            if (initCipher(mCipher, mKeyName)) {
+
+                FingerprintAuthentication fragment
+                        = new FingerprintAuthentication();
+                fragment.setCryptoObject(new FingerprintManager.CryptoObject(mCipher));
+                boolean useFingerprintPreference = mSharedPreferences
+                        .getBoolean(getString(R.string.use_fingerprint_to_authenticate_key),
+                                true);
+                if (useFingerprintPreference) {
+                    fragment.setStage(
+                            FingerprintAuthentication.Stage.FINGERPRINT);
+                } else {
+                    fragment.setStage(
+                            FingerprintAuthentication.Stage.PASSWORD);
+                }
+                fragment.show(getFragmentManager(), DIALOG_FRAGMENT_TAG);
+            } else {
+                FingerprintAuthentication fragment
+                        = new FingerprintAuthentication();
+                fragment.setCryptoObject(new FingerprintManager.CryptoObject(mCipher));
+                fragment.setStage(
+                        FingerprintAuthentication.Stage.NEW_FINGERPRINT_ENROLLED);
+                fragment.show(getFragmentManager(), DIALOG_FRAGMENT_TAG);
+            }
+        }
     }
 }
