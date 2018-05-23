@@ -313,7 +313,7 @@ public class PresenceActivity extends AppCompatActivity {
                     if(code.equals(item.child("kod").getValue().toString()))
                     {
                         values.put("groupID", item.getKey());
-                        values.put("classesNumber", item.child("zajecia").getValue().toString());
+                       // values.put("classesNumber", item.child("zajecia").getValue().toString());
                         nFound = false;
                         getGroup();
                     }
@@ -730,6 +730,7 @@ public class PresenceActivity extends AppCompatActivity {
                 FingerprintAuthentication fragment
                         = new FingerprintAuthentication();
                 fragment.setCryptoObject(new FingerprintManager.CryptoObject(mCipher));
+                fragment.setPassword(firebaseAuth.getCurrentUser().getEmail().toString().trim());
                 boolean useFingerprintPreference = mSharedPreferences
                         .getBoolean(getString(R.string.use_fingerprint_to_authenticate_key),
                                 true);

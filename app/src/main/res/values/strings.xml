@@ -64,6 +64,7 @@
     <string name="use_fingerprint_to_authenticate_title">Użyj odcisku palca aby potwierdzieć</string>
     <string name="use_fingerprint_to_authenticate_key" >use_fingerprint_to_authenticate_key</string>
     <string name="use_password">Użyj hasła</string>
+    <string name="wrong_password">Hasło jest niepoprawne!</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

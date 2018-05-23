@@ -60,7 +60,7 @@ public class GenerateKeyActivity extends AppCompatActivity {
     DatabaseReference database;
 
     //NFC
-    public final String ERROR_DETECTED = "Nie wykryto taga NFC"; //zamienic na R.strings
+    public final String ERROR_DETECTED = "Nie wykryto taga NFC"; //TODO zamienic na R.strings (również w innych miejscach)
     public final String WRITE_SUCCESS = "Pomyślnie zapisano na tagu";
     public final String WRITE_ERROR = "Zbliż tag jeszcze raz";
     NfcAdapter nfcAdapter;
@@ -158,27 +158,27 @@ public class GenerateKeyActivity extends AppCompatActivity {
     private void ustalIdProwadzacy(){
         final String emailProwadzacy = firebaseAuth.getCurrentUser().getEmail();
         database.child("Prowadzacy")
-        .addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
-                while (iterator.hasNext()){
-                    DataSnapshot item = iterator.next();
-                    String emailCurrent = item.child("email").getValue().toString();
-                    if(emailCurrent.equals(emailProwadzacy)){
-                        idProwadzacy = item.getKey().toString();
-                        daneProwadzacy = item.child("tytul").getValue().toString()
-                                +" "+ item.child("imie").getValue().toString()
-                                +" "+item.child("nazwisko").getValue().toString();
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
+                        while (iterator.hasNext()){
+                            DataSnapshot item = iterator.next();
+                            String emailCurrent = item.child("email").getValue().toString();
+                            if(emailCurrent.equals(emailProwadzacy)){
+                                idProwadzacy = item.getKey().toString();
+                                daneProwadzacy = item.child("tytul").getValue().toString()
+                                        +" "+ item.child("imie").getValue().toString()
+                                        +" "+item.child("nazwisko").getValue().toString();
+                            }
+                        }
                     }
-                }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(GenerateKeyActivity.this, "Error", Toast.LENGTH_LONG).show();
-            }
-        });
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Toast.makeText(GenerateKeyActivity.this, "Error", Toast.LENGTH_LONG).show();
+                    }
+                });
 
     }
 
@@ -189,7 +189,7 @@ public class GenerateKeyActivity extends AppCompatActivity {
                 Iterator<DataSnapshot> iterator = dataSnapshot.child("Grupy").getChildren().iterator();
                 while(iterator.hasNext()){
                     DataSnapshot grupa = iterator.next();
-                    if(grupa.child("idProw").getValue().equals(idProwadzacy)){
+                    if(grupa.child("idProw").getValue().toString().equals(idProwadzacy)){
                         String nazwaKursu = dataSnapshot.child("Kursy").child(grupa.child("kodKursu").getValue().toString()).child("nazwa").getValue().toString().trim();
                         String[] kurs = new String[5];
                         kurs[0] = nazwaKursu;

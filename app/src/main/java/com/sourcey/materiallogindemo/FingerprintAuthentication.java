@@ -19,6 +19,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class FingerprintAuthentication extends DialogFragment
@@ -34,6 +35,7 @@ public class FingerprintAuthentication extends DialogFragment
         private TextView mNewFingerprintEnrolledTextView;
 
         private Stage mStage = Stage.FINGERPRINT;
+        private String password;
 
         private FingerprintManager.CryptoObject mCryptoObject;
         private FingerprintUIHelper mFingerprintUiHelper;
@@ -110,6 +112,10 @@ public class FingerprintAuthentication extends DialogFragment
         mStage = stage;
     }
 
+    public void setPassword(String pas){
+            password = pas;
+    }
+
     @Override
     public void onPause() {
         super.onPause();
@@ -154,6 +160,7 @@ public class FingerprintAuthentication extends DialogFragment
      */
     private void verifyPassword() {
         if (!checkPassword(mPassword.getText().toString())) {
+            Toast.makeText(getActivity(), getResources().getString(R.string.wrong_password) ,Toast.LENGTH_LONG).show();
             return;
         }
         if (mStage == Stage.NEW_FINGERPRINT_ENROLLED) {
@@ -176,10 +183,8 @@ public class FingerprintAuthentication extends DialogFragment
     /**
      * @return true if {@code password} is correct, false otherwise
      */
-    private boolean checkPassword(String password) {
-        // Assume the password is always correct.
-        // In the real world situation, the password needs to be verified in the server side.
-        return password.length() > 0;
+    private boolean checkPassword(String passw) {
+        return passw.equals(password);
     }
 
     private final Runnable mShowKeyboardRunnable = new Runnable() {
