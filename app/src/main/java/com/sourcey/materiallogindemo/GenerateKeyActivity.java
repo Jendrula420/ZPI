@@ -34,11 +34,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Random;
-
-import butterknife.BindView;
 
 public class GenerateKeyActivity extends AppCompatActivity {
 
@@ -49,6 +46,7 @@ public class GenerateKeyActivity extends AppCompatActivity {
     Button butWyloguj;
     Button butGenerujKod;
     Button butZapisz;
+    Button butLista;
     Spinner spinnerKursy;
     ArrayAdapter<String> spinnerAdapter;
     ArrayList<String[]> daneKursow; //[0]nazwKursu, [1]idGrupy, [2]kodKursu, [3]dzienTyg, [4]godzRozp
@@ -57,6 +55,7 @@ public class GenerateKeyActivity extends AppCompatActivity {
     String daneProwadzacy;
     String idGrupa;
     String[] elementySpinner;
+    ArrayList<String> osoby;
 
     AlertDialog dialog;
     FirebaseAuth firebaseAuth;
@@ -71,6 +70,7 @@ public class GenerateKeyActivity extends AppCompatActivity {
     IntentFilter writeTagFilters[];
     boolean writeMode;
     Tag myTag;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +88,7 @@ public class GenerateKeyActivity extends AppCompatActivity {
         butGenerujKod = findViewById(R.id.but_generuj);
         butWyloguj = findViewById(R.id.button_wyloguj);
         butZapisz = findViewById(R.id.but_zapisz);
+        butLista = findViewById(R.id.butt_lista_obecnosci);
 
         firebaseAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance().getReference();
@@ -95,7 +96,6 @@ public class GenerateKeyActivity extends AppCompatActivity {
 
 
         ustalIdProwadzacy();
-
 
 
 
@@ -147,6 +147,25 @@ public class GenerateKeyActivity extends AppCompatActivity {
                     Toast.makeText(GenerateKeyActivity.this, WRITE_ERROR, Toast.LENGTH_LONG ).show();
                     e.printStackTrace();
                 }
+            }
+        });
+
+        butLista.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                ustalObecnych();
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(getApplicationContext(), PresencePeopleActivity.class);
+                        intent.putExtra("Lista", osoby);
+                        startActivity(intent);
+                        finish();
+                    }
+                }, 2000);
+
             }
         });
 
@@ -288,6 +307,32 @@ public class GenerateKeyActivity extends AppCompatActivity {
             }
         });
         dialog.show();
+    }
+
+    private void ustalObecnych(){
+        osoby = new ArrayList<>();
+        final String idGrupy = daneKursow.get((int)spinnerKursy.getSelectedItemId())[1];
+        database.child("Obecnosci").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
+                while(iterator.hasNext()){
+                    DataSnapshot grupa = iterator.next();
+                    if(grupa.getKey().toString().equals(idGrupy)){
+                        Iterator<DataSnapshot> iterator2 = grupa.getChildren().iterator();
+                        while (iterator2.hasNext()){
+                            osoby.add(iterator2.next().getKey().toString().trim());
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+        });
     }
 
 

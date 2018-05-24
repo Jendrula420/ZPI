@@ -2,11 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sourcey.materiallogindemo">
 
-    <uses-permission android:name="android.permission.NFC"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
 
     <application
@@ -34,7 +33,8 @@
             android:theme="@style/AppTheme.Dark" />
         <activity android:name=".NFC" />
         <activity android:name=".GenerateKeyActivity" />
-        <activity android:name=".PresenceActivity"/>
+        <activity android:name=".PresenceActivity" />
+        <activity android:name=".PresencePeopleActivity"></activity>
     </application>
 
 </manifest>
