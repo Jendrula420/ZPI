@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.nfc.NdefMessage;
@@ -137,6 +140,7 @@ public class PresenceActivity extends AppCompatActivity {
             @Override
             public void onClick(View view)
             {
+                textStudent.setText(values.get("location"));
                 if(!isInternetConnection())
                     goToOfflineActivity();
                 else
@@ -187,6 +191,7 @@ public class PresenceActivity extends AppCompatActivity {
             tv.setText(getString(R.string.no_nfc_message_p1));
             tv.append("\n"+getString(R.string.no_nfc_message_p2));
             noNFCMode = true;
+
         }
         restoreCodes();
     }
