@@ -20,7 +20,6 @@
             android:layout_marginBottom="28dp"
             android:layout_gravity="center_horizontal" />
 
-        <!--  Email Label --><!-- index android:maxLength="6"-->
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -35,7 +34,6 @@
                 android:hint="@string/e_mail" />
         </android.support.design.widget.TextInputLayout>
 
-        <!--  Password Label -->
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

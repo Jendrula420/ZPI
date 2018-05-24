@@ -34,7 +34,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:padding="12dp"
-            android:text="@string/mistake"/>
+            android:text="@string/close"/>
 
     </LinearLayout>
 </ScrollView>

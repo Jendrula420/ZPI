@@ -33,6 +33,7 @@
         <activity android:name=".NFC" />
         <activity android:name=".GenerateKeyActivity" />
         <activity android:name=".PresenceActivity"/>
+        <activity android:name=".OfflineActivity"/>
     </application>
 
 </manifest>

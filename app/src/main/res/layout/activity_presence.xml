@@ -1,37 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_marginTop="20sp"
+    android:layout_marginTop="8dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.sourcey.materiallogindemo.PresenceActivity">
 
+    <Button
+        android:id="@+id/but_wyloguj2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text= "@string/sign_out" />
+
     <ImageView
         android:contentDescription="@string/logo_description"
         android:src="@drawable/logo_signature"
         android:layout_width="wrap_content"
         android:layout_height="200dp"
-        android:layout_marginBottom="56dp"
         android:layout_gravity="center_horizontal" />
 
     <Button
-        android:id="@+id/but_wyloguj2"
+        android:id="@+id/button_offline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/dark"
+        android:textColor="@color/red"
         android:layout_marginEnd="8dp"
-        android:text= "@string/sign_out"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="invisible"
+        android:text= "@string/offline"/>
+
+    <TextView
+        android:id="@+id/text_noNFCInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:gravity="center_horizontal"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="214dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/text_student"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="220dp"
+        android:textSize="20sp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/text_noNFCInfo"/>
 
     <Button
         android:id="@+id/but_obecnosc"
@@ -54,7 +75,7 @@
         android:layout_marginEnd="30dp"
         android:layout_marginStart="30dp"
         android:layout_marginTop="20dp"
-        android:background="#f4511e"
+        android:background="@color/orange"
         android:text="@string/cafeterias_coupons"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"

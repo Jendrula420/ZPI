@@ -16,5 +16,8 @@
   <color name="iron">#CCCCCC</color>
   <color name="white">#fbd5a7</color>
   <color name="cream">#fbd5a7</color>
-    <color name="dark_green">#005f25</color>
+  <color name="orange">#f4511e</color>
+  <color name="dark">#424242</color>
+  <color name="red">#cc1d1d</color>
+  <color name="dark_green">#005f25</color>
 </resources>

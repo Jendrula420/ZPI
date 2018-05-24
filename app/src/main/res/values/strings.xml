@@ -18,8 +18,8 @@
     <string name="index_number">nr indeksu</string>
     <string name="login_failed">nie poprawne dane logowania</string>
     <string name="login_offline">Zaloguj offline</string>
-    <string name="login_offline_message">Brak połączenie z internetem!\nCzy chcesz zalogować się offline?</string>
-    <string name="offline_message">Twoje obecności zostaną zapisane i przesłane na serwer przy najbliższym logowaniu do serwisu.\nPozostałe aktywności są nie dostępne.</string>
+    <string name="login_offline_message">"Aby się zarejestrować lub zalogować do systemu po raz pierwszy wymagane jest połącznie z internetem.</string>
+    <string name="offline_message">Jesteś w  tybie offline. Kody obecności zostaną zapisane i zweryfikowane przy najbliższym logowaniu do serwisu.\nPozostałe aktywności są nie dostępne.</string>
     <string name="login">Logowanie&#8230;</string>
     <string name="logo_description">Logo Politechniki Wrocławskiej z roku 2017</string>
     <string name="name_first_error">podaj imię minmum 3 litery</string>
@@ -46,11 +46,28 @@
     <string name="cafeterias_coupons">Kupon na stołówkę</string>
     <string name="resignation">Zrezygnyj</string>
     <string name="ok">OK</string>
-    <string name="mistake">Pomyłka / Nieaktualny TAG NFC</string>
+    <string name="close">Zamknij</string>
 
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello World</string>
     <string name="cancel">Anuluj</string>
-    <string name="loading_data">Wczytuje dane...</string>
+    <string name="loading_data">Wczytuje dane&#8230;</string>
     <string name="submit">Zatwierdź</string>
+    <string name="no_nfc_message_p1">Twój telefon nie obsługuje NFC.</string>
+    <string name="no_nfc_message_p2">Aby skorzystać z serwisu będziesz musiał wprowadzać kody ręcznie.</string>
+    <string name="offline">Offline</string>
+    <string name="cafeteria_no_internet_message">Aby skorzystać z tej funkcji potrzebne jest połącznie z internetem. Połącz urządzenie do internetu i kliknij przycisk offline jeżeli nie zniknie, aby zwryfikować dostęp do sieci.</string>
+    <string name="cafeteria_no_nfc_message">Poproś ekspedientkę w stolówce studenckiej o kod do kuponu i wprowadź poniżej:</string>
+    <string name="cafeteria_nfc_message">Proszę zbliżyć tag NFC na stołówce studenckiej w celu wygenerowania kuponu.</string>
+    <string name="presence_nfc_message">Proszę zbliżyć tag NFC w celu odnotowania obecności na zajęciach.</string>
+    <string name="presence_no_nfc_message">Poproś prowadzącego o idywidualny kod obecności i wprowadź poniżej:</string>
+    <string name="wrong_code">Kod jest niepoprawny</string>
+    <string name="cafeterias_coupon_used">Dzisiejszy kupon został już wykorzystany o godzinie:</string>
+    <string name="save_code">Zapisz kod</string>
+    <string name="try_connect_again">Ponów próbę połączenia z serwisem</string>
+    <string name="no_internet_warning">Możliwe jest zapisanie kodu i odnotowanie obecności przy najbliższym poączeniu z interntem. Jednak ze względu na możliwe problemy np. nie aktualy TAG NFC, jest to nie zalecane.</string>
+    <string name="saved_code_message">Kod jest już zapisany w pamięci.</string>
+    <string name="no_code_message">Brak takiego kodu w bazie danych.</string>
+    <string name="data_base_error">Błąd bazy danych proszę skontakatować się z administratorem serwisu</string>
+    <string name="check">Sprawdź</string>
 </resources>
