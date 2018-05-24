@@ -1,6 +1,8 @@
 package com.sourcey.materiallogindemo;
 
+import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.FormatException;
@@ -9,6 +11,7 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -46,7 +49,6 @@ public class GenerateKeyActivity extends AppCompatActivity {
     Button butWyloguj;
     Button butGenerujKod;
     Button butZapisz;
-    Button butOdswiez;
     Spinner spinnerKursy;
     ArrayAdapter<String> spinnerAdapter;
     ArrayList<String[]> daneKursow; //[0]nazwKursu, [1]idGrupy, [2]kodKursu, [3]dzienTyg, [4]godzRozp
@@ -56,13 +58,14 @@ public class GenerateKeyActivity extends AppCompatActivity {
     String idGrupa;
     String[] elementySpinner;
 
+    AlertDialog dialog;
     FirebaseAuth firebaseAuth;
     DatabaseReference database;
 
     //NFC
-    public final String ERROR_DETECTED = "Nie wykryto taga NFC"; //TODO zamienic na R.strings (również w innych miejscach)
-    public final String WRITE_SUCCESS = "Pomyślnie zapisano na tagu";
-    public final String WRITE_ERROR = "Zbliż tag jeszcze raz";
+    public String ERROR_DETECTED;
+    public String WRITE_SUCCESS;
+    public String WRITE_ERROR;
     NfcAdapter nfcAdapter;
     PendingIntent pendingIntent;
     IntentFilter writeTagFilters[];
@@ -74,13 +77,15 @@ public class GenerateKeyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_generate_key);
 
+        ERROR_DETECTED = getResources().getString(R.string.key_error_detected);
+        WRITE_SUCCESS = getResources().getString(R.string.key_write_success);
+        WRITE_ERROR = getResources().getString(R.string.key_write_error);
         textKod = findViewById(R.id.text_kod);
         textProwadzacy = findViewById(R.id.text_prowadzacy);
         textWybor = findViewById(R.id.text_wybor);
         textNfcRead = findViewById(R.id.text_nfcread);
         spinnerKursy = findViewById(R.id.spinner_kursy);
         butGenerujKod = findViewById(R.id.but_generuj);
-        butOdswiez = findViewById(R.id.but_odswiez);
         butWyloguj = findViewById(R.id.button_wyloguj);
         butZapisz = findViewById(R.id.but_zapisz);
 
@@ -107,13 +112,6 @@ public class GenerateKeyActivity extends AppCompatActivity {
         tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
         writeTagFilters = new IntentFilter[] { tagDetected };
 
-        butOdswiez.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                textProwadzacy.setText(daneProwadzacy);
-                odswiezSpinner();
-            }
-        });
 
         butGenerujKod.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,7 +138,7 @@ public class GenerateKeyActivity extends AppCompatActivity {
                         Toast.makeText(GenerateKeyActivity.this, ERROR_DETECTED, Toast.LENGTH_LONG).show();
                     } else {
                         write(textKod.getText().toString(), myTag);
-                        Toast.makeText(GenerateKeyActivity.this, WRITE_SUCCESS, Toast.LENGTH_LONG ).show();
+                        infoDialog(WRITE_SUCCESS);
                     }
                 } catch (IOException e) {
                     Toast.makeText(GenerateKeyActivity.this, WRITE_ERROR, Toast.LENGTH_LONG ).show();
@@ -151,6 +149,28 @@ public class GenerateKeyActivity extends AppCompatActivity {
                 }
             }
         });
+
+        final ProgressDialog loadingDataProgress = new ProgressDialog(GenerateKeyActivity.this, R.style.AppTheme_Dark_Dialog);
+        loadingDataProgress.setIndeterminate(true);
+        loadingDataProgress.setMessage(getResources().getString(R.string.loading_data));
+        loadingDataProgress.show();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                textProwadzacy.setText(daneProwadzacy);
+                odswiezSpinner();
+            }
+        }, 2000);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                textProwadzacy.setText(daneProwadzacy);
+                odswiezSpinner();
+                loadingDataProgress.dismiss();
+            }
+        }, 4000);
 
 
     }
@@ -246,6 +266,28 @@ public class GenerateKeyActivity extends AppCompatActivity {
             database.child("Kody").child(idGrupa.toString()).child("kod").setValue(kod);
             database.child("Obecnosci").child(idGrupa.toString()).removeValue();
         }
+    }
+
+    private void infoDialog(String message)
+    {
+        AlertDialog.Builder adb = new AlertDialog.Builder(this);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_info, null);
+        Button close = dialogView.findViewById(R.id.buttonInfoClose);
+        close.setText(R.string.ok);
+        TextView tv = dialogView.findViewById(R.id.textInfo);
+        tv.setText(message);
+        adb.setView(dialogView);
+        final AlertDialog dialog = adb.create();
+        this.dialog = dialog;
+
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                dialog.cancel();
+            }
+        });
+        dialog.show();
     }
 
 

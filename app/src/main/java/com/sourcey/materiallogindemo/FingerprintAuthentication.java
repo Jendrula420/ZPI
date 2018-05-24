@@ -48,7 +48,6 @@ public class FingerprintAuthentication extends DialogFragment
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            // Do not create a new Fragment when the Activity is re-created such as orientation changes.
             setRetainInstance(true);
             setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Material_Light_Dialog);
         }
@@ -92,8 +91,7 @@ public class FingerprintAuthentication extends DialogFragment
                     (TextView) v.findViewById(R.id.fingerprint_status), this);
             updateStage();
 
-            // If fingerprint authentication is not available, switch immediately to the backup
-            // (password) screen.
+
             if (!mFingerprintUiHelper.isFingerprintAuthAvailable()) {
                 goToBackup();
             }
@@ -130,34 +128,23 @@ public class FingerprintAuthentication extends DialogFragment
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    /**
-     * Sets the crypto object to be passed in when authenticating with fingerprint.
-     */
+
     public void setCryptoObject(FingerprintManager.CryptoObject cryptoObject) {
         mCryptoObject = cryptoObject;
     }
 
-    /**
-     * Switches to backup (password) screen. This either can happen when fingerprint is not
-     * available or the user chooses to use the password authentication method by pressing the
-     * button. This can also happen when the user had too many fingerprint attempts.
-     */
+
     private void goToBackup() {
         mStage = Stage.PASSWORD;
         updateStage();
         mPassword.requestFocus();
 
-        // Show the keyboard.
         mPassword.postDelayed(mShowKeyboardRunnable, 500);
 
-        // Fingerprint is not used anymore. Stop listening for it.
         mFingerprintUiHelper.stopListening();
     }
 
-    /**
-     * Checks whether the current entered password is correct, and dismisses the the dialog and
-     * let's the activity know about the result.
-     */
+
     private void verifyPassword() {
         if (!checkPassword(mPassword.getText().toString())) {
             Toast.makeText(getActivity(), getResources().getString(R.string.wrong_password) ,Toast.LENGTH_LONG).show();
@@ -170,7 +157,6 @@ public class FingerprintAuthentication extends DialogFragment
             editor.apply();
 
             if (mUseFingerprintFutureCheckBox.isChecked()) {
-                // Re-create the key so that fingerprints including new ones are validated.
                 mActivity.createKey(PresenceActivity.DEFAULT_KEY_NAME, true);
                 mStage = Stage.FINGERPRINT;
             }
@@ -180,9 +166,6 @@ public class FingerprintAuthentication extends DialogFragment
         dismiss();
     }
 
-    /**
-     * @return true if {@code password} is correct, false otherwise
-     */
     private boolean checkPassword(String passw) {
         return passw.equals(password);
     }
@@ -203,7 +186,6 @@ public class FingerprintAuthentication extends DialogFragment
                 mBackupContent.setVisibility(View.GONE);
                 break;
             case NEW_FINGERPRINT_ENROLLED:
-                // Intentional fall through
             case PASSWORD:
                 mCancelButton.setText(R.string.cancel);
                 mSecondDialogButton.setText(R.string.ok);
@@ -229,8 +211,6 @@ public class FingerprintAuthentication extends DialogFragment
 
     @Override
     public void onAuthenticated() {
-        // Callback from FingerprintUiHelper. Let the activity know that authentication was
-        // successful.
         mActivity.onPurchased(true /* withFingerprint */, mCryptoObject);
         dismiss();
     }
@@ -240,9 +220,7 @@ public class FingerprintAuthentication extends DialogFragment
         goToBackup();
     }
 
-    /**
-     * Enumeration to indicate which authentication method the user is trying to authenticate with.
-     */
+
     public enum Stage {
         FINGERPRINT,
         NEW_FINGERPRINT_ENROLLED,

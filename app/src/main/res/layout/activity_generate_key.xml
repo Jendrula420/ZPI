@@ -83,16 +83,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_nfcread" />
 
-    <Button
-        android:id="@+id/but_odswiez"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="odśwież"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner_kursy" />
-
     <TextView
         android:id="@+id/text_nfcread"
         android:layout_width="wrap_content"

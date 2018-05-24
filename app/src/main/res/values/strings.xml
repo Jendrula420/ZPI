@@ -47,11 +47,14 @@
     <string name="resignation">Zrezygnyj</string>
     <string name="ok">OK</string>
     <string name="mistake">Pomyłka / Nieaktualny TAG NFC</string>
+    <string name="key_error_detected">Nie wykryto taga NFC</string>
+    <string name="key_write_success">Kod został pomyślnie zapisany na tagu NFC</string>
+    <string name="key_write_error">Zbliż tag jeszcze raz</string>
 
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello World</string>
     <string name="cancel">Anuluj</string>
-    <string name="loading_data">Wczytuje dane...</string>
+    <string name="loading_data">Wczytuję dane...</string>
     <string name="submit">Zatwierdź</string>
     <string name="password_description">Wprowadź hasło aby kontynuować</string>
     <string name="new_fingerprint_enrolled_description">Do tego urządzenia dodano nowy odcisk palca, więc wymagane jest hasło</string>

@@ -668,13 +668,7 @@ public class PresenceActivity extends AppCompatActivity {
     public void onPurchased(boolean withFingerprint,
                             @Nullable FingerprintManager.CryptoObject cryptoObject) {
         if (withFingerprint) {
-            // If the user has authenticated with fingerprint, verify that using cryptography and
-            // then show the confirmation message.
             assert cryptoObject != null;
-            tryEncrypt(cryptoObject.getCipher());
-        } else {
-            // Authentication happened with backup password. Just show the confirmation message.
-           // showConfirmation(null);
         }
         potwierdzObecnosc();
     }
@@ -693,25 +687,8 @@ public class PresenceActivity extends AppCompatActivity {
         }
     }
 
-//    private void showConfirmation(byte[] encrypted) {
-//        findViewById(R.id.confirmation_message).setVisibility(View.VISIBLE);
-//        if (encrypted != null) {
-//            TextView v = findViewById(R.id.encrypted_message);
-//            v.setVisibility(View.VISIBLE);
-//            v.setText(Base64.encodeToString(encrypted, 0 /* flags */));
-//        }
-//    }
 
-    private void tryEncrypt(Cipher cipher) {
-        try {
-            byte[] encrypted = cipher.doFinal(SECRET_MESSAGE.getBytes());
-           // showConfirmation(encrypted);
-        } catch (BadPaddingException | IllegalBlockSizeException e) {
-            Toast.makeText(this, "Failed to encrypt the data with the generated key. "
-                    + "Retry the purchase", Toast.LENGTH_LONG).show();
-            //Log.e(TAG, "Failed to encrypt the data with the generated key." + e.getMessage());
-        }
-    }
+
 
     private class PurchaseFingerPrint {
 
