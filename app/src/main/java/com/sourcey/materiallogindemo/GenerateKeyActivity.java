@@ -56,6 +56,7 @@ public class GenerateKeyActivity extends AppCompatActivity {
     String idGrupa;
     String[] elementySpinner;
     ArrayList<String> osoby;
+    String zajeciaListaObecnosci;
 
     AlertDialog dialog;
     FirebaseAuth firebaseAuth;
@@ -166,6 +167,7 @@ public class GenerateKeyActivity extends AppCompatActivity {
                     public void run() {
                         Intent intent = new Intent(getApplicationContext(), PresencePeopleActivity.class);
                         intent.putExtra("Lista", osoby);
+                        intent.putExtra("Nazwa zajec", zajeciaListaObecnosci);
                         listaProgress.dismiss();
                         startActivity(intent);
                     }
@@ -316,6 +318,7 @@ public class GenerateKeyActivity extends AppCompatActivity {
 
     private void ustalObecnych(){
         osoby = new ArrayList<>();
+        zajeciaListaObecnosci = daneKursow.get((int)spinnerKursy.getSelectedItemId())[0];
         final String idGrupy = daneKursow.get((int)spinnerKursy.getSelectedItemId())[1];
         database.addValueEventListener(new ValueEventListener() {
             @Override
