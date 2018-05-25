@@ -55,6 +55,7 @@
     <string name="hello_world">Hello World</string>
     <string name="cancel">Anuluj</string>
     <string name="loading_data">Wczytuję dane...</string>
+    <string name="loading_list_data">Pobieranie listy...</string>
     <string name="submit">Zatwierdź</string>
     <string name="password_description">Wprowadź hasło aby kontynuować</string>
     <string name="new_fingerprint_enrolled_description">Do tego urządzenia dodano nowy odcisk palca, więc wymagane jest hasło</string>

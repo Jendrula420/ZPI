@@ -76,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        loadUser();
+       // loadUser();
     }
 
     public void login() {

@@ -154,6 +154,11 @@ public class GenerateKeyActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                final ProgressDialog listaProgress = new ProgressDialog(GenerateKeyActivity.this, R.style.AppTheme_Dark_Dialog);
+                listaProgress.setIndeterminate(true);
+                listaProgress.setMessage(getResources().getString(R.string.loading_list_data));
+                listaProgress.show();
+
                 ustalObecnych();
 
                 new Handler().postDelayed(new Runnable() {
@@ -161,10 +166,10 @@ public class GenerateKeyActivity extends AppCompatActivity {
                     public void run() {
                         Intent intent = new Intent(getApplicationContext(), PresencePeopleActivity.class);
                         intent.putExtra("Lista", osoby);
+                        listaProgress.dismiss();
                         startActivity(intent);
-                        finish();
                     }
-                }, 2000);
+                }, 3000);
 
             }
         });
@@ -312,17 +317,33 @@ public class GenerateKeyActivity extends AppCompatActivity {
     private void ustalObecnych(){
         osoby = new ArrayList<>();
         final String idGrupy = daneKursow.get((int)spinnerKursy.getSelectedItemId())[1];
-        database.child("Obecnosci").addValueEventListener(new ValueEventListener() {
+        database.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
+                Iterator<DataSnapshot> iterator = dataSnapshot.child("Obecnosci").getChildren().iterator();
                 while(iterator.hasNext()){
                     DataSnapshot grupa = iterator.next();
                     if(grupa.getKey().toString().equals(idGrupy)){
                         Iterator<DataSnapshot> iterator2 = grupa.getChildren().iterator();
                         while (iterator2.hasNext()){
-                            osoby.add(iterator2.next().getKey().toString().trim());
+                            String indeks = iterator2.next().getKey().toString().trim();
+                            StringBuilder sbStudent = new StringBuilder();
+
+                            Iterator<DataSnapshot> iterator3 = dataSnapshot.child("Studenci").getChildren().iterator();
+                            while (iterator3.hasNext()){
+                                DataSnapshot student = iterator3.next();
+                                if(student.getKey().equals(indeks)){
+                                    sbStudent.append(student.child("nazwisko").getValue().toString());
+                                    sbStudent.append(" ");
+                                    sbStudent.append(student.child("imie").getValue().toString());
+                                    sbStudent.append(", ");
+                                    break;
+                                }
+                            }
+                            sbStudent.append(indeks);
+                            osoby.add(sbStudent.toString());
                         }
+                        break;
                     }
                 }
             }

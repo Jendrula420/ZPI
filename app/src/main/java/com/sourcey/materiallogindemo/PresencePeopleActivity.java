@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class PresencePeopleActivity extends AppCompatActivity {
 
@@ -20,6 +22,7 @@ public class PresencePeopleActivity extends AppCompatActivity {
 
         listaObecnosciView = findViewById(R.id.list_listaObecnosci);
         lista = (ArrayList<String>) getIntent().getSerializableExtra("Lista");
+        Collections.sort(lista);
         adapter = new ArrayAdapter<String>(this, R.layout.presence_list_item, lista);
         listaObecnosciView.setAdapter(adapter);
     }
